@@ -6,17 +6,7 @@
   "background_color": "#0A4D2A",
   "theme_color": "#0A4D2A",
   "icons": [
-    {
-      "src": "IMG-20261031-WA7426.jpg",
-      "sizes": "192x192",
-      "type": "image/jpeg",
-      "purpose": "any"
-    },
-    {
-      "src": "IMG-20261031-WA0986.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any"
-    }
+    { "src": "IMG-20261031-WA4983.jpg", "sizes": "192x192", "type": "image/jpeg" },
+    { "src": "IMG-20261031-WA5555.jpg", "sizes": "512x512", "type": "image/jpeg" }
   ]
 }

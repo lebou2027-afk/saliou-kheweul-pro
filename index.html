@@ -3,6 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="only light">
 <title>Gestion commerciale</title>
+<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;700;800&family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root{--g:#0B5D2A;--o:#FFD500;--ot:#000;--bg:#fff;--fg:#000;--bd:#0B5D2A;--mut:#333;color-scheme:only light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -519,4 +520,6 @@ if(fSol(p)>0){alert('Ce déposant a encore '+f(fSol(p))+' confié. Enregistrez l
 askC('Supprimer le déposant '+p.nom+' et tout son historique ?',()=>{db.fonds=db.fonds.filter(x=>x.id!=pid);log('Suppression · Déposant · '+p.nom);save();render()})}
 
 render();
-</script></body></html>
+</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}</script>
+</body></html>

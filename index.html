@@ -2,73 +2,51 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SALIOU KHEWEUL PRO - Cloud</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SALIOU KHEWEUL PRO</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<style>body{font-family:sans-serif;padding:15px;background:#f5f5f5} .card{background:white;padding:15px;border-radius:10px;box-shadow:0 2px 5px #ccc} input,button{padding:12px;width:100%;margin:5px 0;border-radius:8px;border:1px solid #ccc} button{background:#008751;color:white;font-weight:bold;border:none} #status{padding:10px;background:#e8f5e9;border-radius:8px;margin:10px 0}</style>
+<style>
+body{font-family:Arial,sans-serif;background:#f0f2f5;padding:12px;margin:0}
+h1{text-align:center;color:#0d6efd}
+.card{background:#fff;padding:15px;border-radius:12px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+input,select,button{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:1px solid #ccc;box-sizing:border-box;font-size:15px}
+button{background:#0d6efd;color:#fff;font-weight:bold;border:none;cursor:pointer}
+#status{text-align:center;font-weight:bold;padding:10px;border-radius:8px;margin-bottom:10px}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ddd;padding:8px;font-size:13px}
+th{background:#0d6efd;color:#fff}
+</style>
 </head>
 <body>
+<h1>SALIOU KHEWEUL PRO</h1>
+<div id="status" style="background:#fff3cd">Connexion...</div>
 <div class="card">
-<h2>SALIOU KHEWEUL PRO - Cloud ✅</h2>
-<div id="status">Connexion...</div>
-<input id="nom" placeholder="Nom du déposant">
-<input id="montant" type="number" placeholder="Montant (F)">
-<button onclick="ajouter()">Ajouter + Synchroniser</button>
-<div id="liste" style="margin-top:15px"></div>
+<input id="client" placeholder="Nom du client">
+<input id="montant" type="number" placeholder="Montant FCFA">
+<select id="type"><option>Orange Money</option><option>Wave</option><option>Espèces</option><option>Dette</option></select>
+<button onclick="ajouter()">Enregistrer Vente</button>
 </div>
-
+<div class="card">
+<table><thead><tr><th>Client</th><th>Montant</th><th>Type</th><th>Date</th></tr></thead><tbody id="liste"></tbody></table>
+</div>
 <script>
-// CONFIG FIREBASE - saliou-kheweul-pro SANS E
-const firebaseConfig = {
-  apiKey: "AIzaSy...COLLE_TA_CLE_ICI",
-  authDomain: "saliou-kheweul-pro.firebaseapp.com",
-  projectId: "saliou-kheweul-pro",
-  storageBucket: "saliou-kheweul-pro.appspot.com",
-  messagingSenderId: "VOTRE_ID",
-  appId: "VOTRE_APP_ID"
-};
-
+const firebaseConfig = {apiKey:"AIzaSyDAAcY-VzvZ3LoYdctBjngbF6bY6PJDfUk",authDomain:"saliou-kheweul-pro.firebaseapp.com",projectId:"saliou-kheweul-pro",storageBucket:"saliou-kheweul-pro.firebasestorage.app",messagingSenderId:"583117501384",appId:"1:583117501384:web:509a67f3803a3725da86fd",measurementId:"G-81DJ7S3EWK"};
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const docRef = db.collection("kheweul_pro").doc("data_principale");
-
-let donnees = JSON.parse(localStorage.getItem('kheweul_data')||'[]');
-
-function render(){
-  document.getElementById('liste').innerHTML = donnees.map(d=>`<div style="border-bottom:1px solid #eee;padding:8px">${d.nom} - ${d.montant} F - ${d.date}</div>`).join('');
+const db=firebase.firestore();
+document.getElementById('status').textContent="✅ Connecté à Firebase - Prêt";
+document.getElementById('status').style.background="#d4edda";
+function ajouter(){
+  const c=document.getElementById('client').value.trim();
+  const m=parseInt(document.getElementById('montant').value);
+  const t=document.getElementById('type').value;
+  if(!c||!m)return alert("Remplis nom et montant");
+  db.collection("ventes").add({client:c,montant:m,type:t,date:new Date().toLocaleString('fr-SN'),timestamp:Date.now()}).then(()=>{document.getElementById('client').value='';document.getElementById('montant').value='';});
 }
-
-async function ajouter(){
-  const nom=document.getElementById('nom').value;
-  const montant=document.getElementById('montant').value;
-  if(!nom||!montant)return alert('Remplis tout');
-  const obj={nom,montant,date:new Date().toLocaleString(),id:Date.now()};
-  donnees.push(obj);
-  localStorage.setItem('kheweul_data',JSON.stringify(donnees));
-  render();
-  document.getElementById('nom').value='';
-  document.getElementById('montant').value='';
-  try{
-    await docRef.set({donnees:donnees,updated:firebase.firestore.FieldValue.serverTimestamp()});
-    document.getElementById('status').innerHTML="✅ Synchronisé Cloud - "+new Date().toLocaleTimeString();
-  }catch(e){ document.getElementById('status').innerHTML="❌ Erreur: "+e.message; }
-}
-
-// Chargement depuis Cloud au démarrage
-docRef.get().then(snap=>{
-  if(snap.exists){
-    donnees=snap.data().donnees||donnees;
-    localStorage.setItem('kheweul_data',JSON.stringify(donnees));
-    document.getElementById('status').innerHTML="✅ Cloud connecté - "+donnees.length+" enregistrements";
-  }else{
-    document.getElementById('status').innerHTML="✅ Prêt - Base vide, ajoute ton 1er dépôt";
-  }
-  render();
-}).catch(e=>{document.getElementById('status').innerHTML="Mode hors-ligne: "+e.message; render();});
-
-// Ecoute temps réel
-docRef.onSnapshot(snap=>{ if(snap.exists){ donnees=snap.data().donnees||donnees; render(); } });
+db.collection("ventes").orderBy("timestamp","desc").onSnapshot(s=>{
+  const b=document.getElementById('liste');b.innerHTML='';
+  s.forEach(d=>{const v=d.data();b.innerHTML+=`<tr><td>${v.client}</td><td>${v.montant} F</td><td>${v.type}</td><td>${v.date}</td></tr>`;});
+});
 </script>
 </body>
 </html>

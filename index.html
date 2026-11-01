@@ -534,13 +534,32 @@ render();
   function telechargerFacturePDF(){
   var el = document.getElementById('pv');
   if(!el){ alert('Facture non trouvée'); return; }
+  
   var opt = {
-    margin: 2,
-    filename: 'Saliou-Pro-'+Date.now()+'.pdf',
-    image: { type: 'jpeg', quality: 1 },
-    html2canvas: { scale: 3, useCORS: true },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    margin: [5,5,5,5],
+    filename: 'FAC-2026-0011.pdf',
+    image: { type: 'jpeg', quality: 0.99 },
+    html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
   };
-  html2pdf().set(opt).from(el).save();
+  
+  // Au lieu de .save() qui ferme, on fait .outputPdf et partage
+  html2pdf().set(opt).from(el).toPdf().get('pdf').then(function(pdf){
+    var blob = pdf.output('blob');
+    var file = new File([blob], 'FAC-2026-0011.pdf', {type: 'application/pdf'});
+    
+    // Si le téléphone peut partager directement
+    if(navigator.canShare && navigator.canShare({files: [file]})){
+      navigator.share({
+        files: [file],
+        title: 'Facture Saliou Kheweul Pro',
+        text: 'Voici votre facture'
+      });
+    } else {
+      // Sinon on ouvre le PDF dans un nouvel onglet, il reste ouvert
+      var url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    }
+  });
 }
 </script></body></html>

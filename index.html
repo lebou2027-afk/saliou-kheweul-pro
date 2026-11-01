@@ -521,7 +521,7 @@ const T=tiles([['Total déposé',f(fSum(p,'Dépôt'))],['Total retiré',f(fSum(p
 const B=x=>`<button class="bt g sm" onclick="fondsRecu(${p.id},${x.o.id})">🎫 Reçu</button>`+(can('fonds','s')?`<button class="bt o sm" onclick="fondsOpDel(${p.id},${x.o.id})">Suppr.</button>`:'');
 const h=coHead()+'<h2>Relevé — '+esc(p.nom)+'</h2><p><b>'+(p.tel?'Tél : '+esc(p.tel)+' · ':'')+(p.adr?esc(p.adr)+' · ':'')+'Édité le '+new Date().toLocaleDateString('fr-FR')+'</b></p>'+T+'<h3 style="margin-top:16px">Opérations</h3>'+tbl(['Date','N°','Opération','Mode','Montant','Solde après','<span class="noprt"> </span>'],R.map(x=>[fdt(x.o.date),esc(x.o.num),x.o.type,esc(x.o.mode||'—'),(x.o.type=='Retrait'?'− ':'+ ')+f(x.o.montant),f(x.ap),'<span class="noprt">'+B(x)+'</span>']),'Solde final : '+f(fSol(p)));
 PT='releve-'+p.nom;$('pv').innerHTML=h;
-ui(`<div style="overflow-x:auto">${h}</div><div class="bar" style="margin-top:14px"><button class="bt g" onclick="window.print()">🖨️ Imprimer</button><button class="bt o" onclick="dlHtml()">⬇️ Télécharger</button></div>`,900)}
+ui(`<div style="overflow-x:auto">${h}</div><div class="bar" style="margin-top:14px"><button class="bt g" onclick="window.print()">🖨️ Imprimer</button><button class="bt o" onclick=""telechargerFacturePDF())⬇️ Télécharger</button></div>`,900)}
 function fondsOpDel(pid,oid){const p=db.fonds.find(x=>x.id==pid),o=p&&p.ops.find(x=>x.id==oid);if(!o)return;
 askC('Supprimer '+o.type.toLowerCase()+' '+o.num+' de '+f(o.montant)+' ?',()=>{const ops=p.ops.filter(x=>x.id!=oid);
 if(!fOk(ops)){alert('Suppression impossible : le solde deviendrait négatif à une date postérieure.');return}
@@ -531,4 +531,16 @@ if(fSol(p)>0){alert('Ce déposant a encore '+f(fSol(p))+' confié. Enregistrez l
 askC('Supprimer le déposant '+p.nom+' et tout son historique ?',()=>{db.fonds=db.fonds.filter(x=>x.id!=pid);log('Suppression · Déposant · '+p.nom);save();render()})}
 
 render();
+  function telechargerFacturePDF(){
+  var el = document.getElementById('pv');
+  if(!el){ alert('Facture non trouvée'); return; }
+  var opt = {
+    margin: 2,
+    filename: 'Saliou-Pro-'+Date.now()+'.pdf',
+    image: { type: 'jpeg', quality: 1 },
+    html2canvas: { scale: 3, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(el).save();
+}
 </script></body></html>

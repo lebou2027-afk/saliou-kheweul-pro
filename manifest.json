@@ -1,12 +1,16 @@
 {
   "name": "Saliou Kheweul Pro",
-  "short_name": "SKP",
-  "start_url": "./",
+  "short_name": "Kheweul Pro",
+  "description": "Gestion commerciale complète",
+  "start_url": "/saliou-kheweul-pro/",
   "display": "standalone",
-  "background_color": "#0A4D2A",
-  "theme_color": "#0A4D2A",
+  "background_color": "#0a5c36",
+  "theme_color": "#0a5c36",
   "icons": [
-    { "src": "IMG-20261031-WA4983.jpg", "sizes": "192x192", "type": "image/jpeg" },
-    { "src": "IMG-20261031-WA5555.jpg", "sizes": "512x512", "type": "image/jpeg" }
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2331/2331941.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
